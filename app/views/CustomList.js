@@ -4,97 +4,68 @@ import React, {Component} from 'react';
 import {View, ScrollView, Text, StyleSheet, ListView, Button} from 'react-native';
 
 import Api from '../components/Api.js';
+import _ from 'lodash';
+import Tts from 'react-native-android-speech';
+import GiftedSpinner from 'react-native-gifted-spinner';
 
 export default class CustomList extends Component {
 
     constructor(props){
 
         super(props);
+
         this.state = {
-            query: null,
-            hasResult: false,
-            noResult: false, 
-            result: null,
-            isLoading: false,
-            dataSource: new ListView.DataSource({
-                rowHasChanged: (row1, row2) => row1 !== row2,
-            })
+            isLoading: false
         };
     }
 
     componentTestSearch(query){
 
-        alert('search');
+        query = _.capitalize(query);
 
-        // var query = _.capitalize(this.state.query);
+        this.setState({
+            isLoading: true
+        });
 
-        // this.setState({
-        //     isLoading: true
-        // });
+        Api(query).then(
 
-        // api(query).then(
+            (data) => {
 
-        //     (data) => {
+                alert(data.name);
 
-        //         var speech = 'query was not found. Please type the exact query.';
+                this.setState({
+                    isLoading: false
+                });
 
-        //         if(data.doc){
+                Tts.speak({
+                    text: speech,
+                    forceStop: true, 
+                    language: 'en' 
+                });
 
-        //             var types = this.state.dataSource.cloneWithRows(data.doc.types);
-
-        //             this.setState({
-        //                 hasResult: true,
-        //                 noResult: false,
-        //                 result: data.doc,
-        //                 types: types,
-        //                 isLoading: false
-        //             });
-
-        //             var type_names = _.map(data.doc.types, function(type){
-
-        //             return type.name;
-        //         });
-
-
-        //         speech = data.doc.name + ". A " + type_names.join(' and ') + ' query. ' + data.doc.description;
-
-
-        //         }else{
-
-        //             this.setState({
-        //                 hasResult: false,
-        //                 noResult: true,
-        //                 isLoading: false,
-        //                 result: null
-        //             });
-        //         }
-
-        //         tts.speak({
-        //             text: speech,
-        //             forceStop : true , 
-        //             language : 'en' 
-        //         });
-
-        //     }
-        // );
+            }
+        );
 
     }
 
-    // onPressSendRequest(){
+    
 
-    //     // alert('Button has been pressed!');
-    //     this.search();
-    // }
+    onPressSendRequest() {
 
-    onPressSendRequest(){
-
-        alert(typeof componentTestSearch);
-
-        // alert('Button has been pressed!');
-        // this.componentTestSearch('test');
+        this.componentTestSearch('aaaa');
     }
 
-    render(){
+    componentDidMount() {
+
+        // SomeEvent.subscribe(this.myFunction);
+    }
+
+    componentWillUnmount() {
+
+        // SomeEvent.unsubscribe(this.myFunction);
+    }
+
+    render() {
 
         return (
             <ScrollView contentContainerStyle={styles.view}>
@@ -111,10 +82,18 @@ export default class CustomList extends Component {
                 </Text>
 
                 <Button
-                    onPress={this.onPressSendRequest}
+                    onPress={this.onPressSendRequest.bind(this)}
                     title="Send request"
                     color="#841584"
                 />
+
+                {
+                    this.state.isLoading &&
+                    <View style={styles.loader}>
+                        <GiftedSpinner />
+                    </View>
+                }
+
             </ScrollView>
         );
     }
@@ -145,6 +124,10 @@ const styles = StyleSheet.create({
   linkCredits: {
     fontStyle: 'italic',
     color: '#2962FF'
-  }
+  },
+  loader: {
+    flex: 1,
+    alignItems: 'center'
+  },
 });
 

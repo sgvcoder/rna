@@ -1,6 +1,6 @@
-module.exports = function(pokemon){
+module.exports = function(str){
 	
-	var url = 'http://192.168.1.100/test/android/pokedex/get.php?name=' + pokemon;
+	var url = 'http://192.168.1.100/test.json?name=' + str;
 
 	return fetch(url).then(function(response){
 
