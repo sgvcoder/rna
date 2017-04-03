@@ -48,8 +48,6 @@ export default class CustomList extends Component {
 
     }
 
-    
-
     onPressSendRequest() {
 
         this.componentTestSearch('aaaa');
