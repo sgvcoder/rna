@@ -1,5 +1,5 @@
 export const routes = [
-  {title: 'Lighthouses', index: 0},
+  {title: 'Home', index: 0},
   {title: 'Lindau Lighthouse', index: 1},
   {title: 'Fanad Lighthouse', index: 2},
   {title: 'The St. Augustine Light', index: 3},
@@ -8,47 +8,51 @@ export const routes = [
   {title: 'Bass Harbor Head Station', index: 6},
   {title: 'About', index: 7},
   {title: 'Credits', index: 8},
-  {title: 'List', index: 9}
+  {title: 'List', index: 9},
+  {title: 'ArticleView', index: 10},
+  {title: 'SearchModal', index: 11},
+  {title: 'Item Details', index: 12},
 ];
 
 export const toolbarActions = [
   { title: 'About', show: 'never' },
   { title: 'Credits', show: 'never' },
-  { title: 'List', show: 'never' }
+  { title: 'List', show: 'never' },
+  { title: 'Search', iconName: 'md-search', show: 'always' }
 ]
 
-export const menuItems = [ 
-  {
-    thumb: 'lighthouse_lindau',
-    index: 1,
-    label: 'Lindau Lighthouse, Germany',
-  },
-  {
-    thumb: 'lighthouse_fanad',
-    index: 2,
-    label: 'Fanad Lighthouse, Ireland'
-  },
-  {
-    thumb: 'lighthouse_augustine',
-    index: 3,
-    label: 'The St. Augustine Light, Florida'
-  },
-  {
-    thumb: 'lighthouse_peggys',
-    index: 4,
-    label: 'Peggys Point Lighthouse, Canada'
-  },
-  {
-    thumb: 'lighthouse_hercules',
-    index: 5,
-    label: 'Tower of Hercules, Spain'
-  },
-  {
-    thumb: 'lighthouse_bass',
-    index: 6,
-    label: 'Bass Harbor Head Station, Maine'
-  }
-];
+// export const menuItems = [ 
+//   {
+//     thumb: 'lighthouse_lindau',
+//     index: 1,
+//     label: 'Lindau Lighthouse, Germany',
+//   },
+//   {
+//     thumb: 'lighthouse_fanad',
+//     index: 2,
+//     label: 'Fanad Lighthouse, Ireland'
+//   },
+//   {
+//     thumb: 'lighthouse_augustine',
+//     index: 3,
+//     label: 'The St. Augustine Light, Florida'
+//   },
+//   {
+//     thumb: 'lighthouse_peggys',
+//     index: 4,
+//     label: 'Peggys Point Lighthouse, Canada'
+//   },
+//   {
+//     thumb: 'lighthouse_hercules',
+//     index: 5,
+//     label: 'Tower of Hercules, Spain'
+//   },
+//   {
+//     thumb: 'lighthouse_bass',
+//     index: 6,
+//     label: 'Bass Harbor Head Station, Maine'
+//   }
+// ];
 
 export const lighthouses = [
   {

@@ -1,6 +1,10 @@
-module.exports = function(str){
+'use strict';
+
+import ConfigApp from '../configs/app.js';
+
+module.exports = function(api, query){
 	
-	var url = 'http://192.168.1.100/test.json?name=' + str;
+	var url = ConfigApp.serverApiUrl + api + '.php?' + query;
 
 	return fetch(url).then(function(response){
 

@@ -1,3 +1,5 @@
+'use strict';
+
 import React, {
     Component, 
     PropTypes
@@ -13,7 +15,13 @@ import {
     AsyncStorage
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-// import {menuItems} from '../data.service';
+import _ from 'lodash';
+import Tts from 'react-native-android-speech';
+import GiftedSpinner from 'react-native-gifted-spinner';
+
+import ConfigApp from '../configs/app.js';
+import Api from '../components/Api.js';
+import {getLikedItems, addLikedItem, deleteLikedItem} from '../components/LocalStorage.js';
 
 class DrawerMenu extends Component {
 
@@ -23,55 +31,60 @@ class DrawerMenu extends Component {
 
         this.state = {
             route: 0,
-            menuItems: []
+            options: {items:[]},
+            isLoading: false
         };
+
         this.navigateTo = this.navigateTo.bind(this);
     }
 
     navigateTo(index) {
 
-        this.props.navigate(index);
+        this.props.navigate(12, {itemId: index}, 'item_details');
     }
 
     componentDidMount() {
 
-        let key = 'data_test_4';
+        // getLikedItems();
+        // addLikedItem();
+        // deleteLikedItem(6);
+
+        let key = 'requestDrawerMenu' + ConfigApp.version;
         
         AsyncStorage.getItem(key).then((value) => {
             
             if(value !== null){
 
                 this.setState({
-                    menuItems: JSON.parse(value)
+                    options: JSON.parse(value)
                 });
 
-            } else {                
+            } else {
 
-                let data = [{
-                        thumb: 'lighthouse_lindau',
-                        index: 1,
-                        label: 'Lindau Lighthouse, Germany',
-                    },
-                    {
-                        thumb: 'lighthouse_fanad',
-                        index: 2,
-                        label: 'Fanad Lighthouse, Ireland'
-                    }];
+                var query = _.capitalize('items');
 
                 this.setState({
-                    menuItems: data
+                    isLoading: true
                 });
 
-                AsyncStorage.setItem(key, JSON.stringify(data));
+                Api('apiDrawerMenu', query).then(
+
+                    (data) => {
+
+                        this.setState({
+                            isLoading: false,
+                            options: data
+                        });
+
+                        AsyncStorage.setItem(key, JSON.stringify(data));
+                    }
+                );
             }
         });
-
-        // SomeEvent.subscribe(this.myFunction);
     }
 
     componentWillUnmount() {
 
-        // SomeEvent.unsubscribe(this.myFunction);
     }
 
     render() {
@@ -83,28 +96,33 @@ class DrawerMenu extends Component {
                         <Icon name="md-wine" size={50} color="#fff" />
                     </View>
                     <View style={styles.headerInfo} key={1}>
-                        <Text style={styles.headerTitle} key={0}>
-                            sgvcoder
-                        </Text>
-                        <Text style={styles.headerEmail} key={1}>
-                            sgvcoder@gmail.com
-                        </Text>
+                        <Text style={styles.headerTitle} key={0}>{this.state.options.headerTitle}</Text>
+                        <Text style={styles.headerEmail} key={1}>{this.state.options.headerEmail}</Text>
                     </View>
                 </View>
+
+                {
+                    this.state.isLoading &&
+                    <View style={styles.loader}>
+                        <GiftedSpinner />
+                    </View>
+                }
+
                 <View style={styles.content} key={1}>
                     <View>
-                        {this.state.menuItems.map((item, idx) => (
+                        {this.state.options.items.map((item, idx) => (
                             <TouchableOpacity
                                 key={idx}
                                 style={styles.listItem}
-                                onPress={this.navigateTo.bind(this, item.index)}
-                            >
+                                onPress={this.navigateTo.bind(this, item.index)} >
+
                                 <Image source={{ uri: item.thumb}} style={styles.listItemImage} />
                                 <Text style={styles.listItemTitle}>{item.label}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 </View>
+
             </ScrollView>
         );
     }
@@ -117,9 +135,12 @@ DrawerMenu.propTypes = {
 const styles = StyleSheet.create({
     drawer: {
         flex: 1,
+        backgroundColor: '#353535'
     },
     header: {
-        height: 180,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
         flex: 1,
         padding: 16,
         backgroundColor: '#353535'
@@ -130,7 +151,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#737373'
     },
     headerInfo: {
-        height: 56
+        paddingTop: 7,
+        paddingLeft: 10
     },
     headerIcon: {
         width: 70,

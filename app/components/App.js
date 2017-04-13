@@ -1,3 +1,5 @@
+'use strict';
+
 import React, {Component, PropTypes} from 'react';
 import {
     View, 
@@ -6,7 +8,6 @@ import {
     Navigator, 
     ToolbarAndroid, 
     TouchableOpacity, 
-    Image, 
     BackAndroid, 
     StyleSheet
 } from 'react-native';
@@ -17,16 +18,14 @@ import {routes, toolbarActions} from '../data.service';
 
 import DrawerMenu from './DrawerMenu';
 
+import ArticleView from '../views/ArticleView';
+import ItemDetailsView from '../views/ItemDetailsView';
+import SearchModal from '../views/modals/SearchModal';
+
 import Home from '../views/Home';
 import About from '../views/About';
 import Credits from '../views/Credits';
 import CustomList from '../views/CustomList';
-import Lindau from '../views/lighthouses/Lindau';
-import Fanad from '../views/lighthouses/Fanad';
-import Augustine from '../views/lighthouses/Augustine';
-import Peggys from '../views/lighthouses/Peggys';
-import Hercules from '../views/lighthouses/Hercules';
-import Bass from '../views/lighthouses/Bass';
 
 class App extends Component {
 
@@ -36,6 +35,7 @@ class App extends Component {
 
         this.state = {
             routes: [0],
+            action: null,
             drawerClosed: true,
         }
         this.toggleDrawer = this.toggleDrawer.bind(this);
@@ -56,6 +56,9 @@ class App extends Component {
                 break;
             case 2:
                 this.navigateTo(9);
+                break;
+            case 3:
+                this.navigateTo(11, {}, 'search_modal');
                 break;
         }
     }
@@ -78,22 +81,24 @@ class App extends Component {
         });
     }
 
-    navigateTo(idx) {
+    navigateTo(rout_idx, passProps, action) {
 
         this.DRAWER.closeDrawer();
         let _routes = this.state.routes.slice();
         let hasRoute = false;
 
-        if (idx === 0) {
+        if (rout_idx === 0) {
 
             this._navigator.resetTo(routes[0]);
             this.setState({
-                routes: [0]
+                routes: [0],
+                action: action,
+                passProps: passProps
             });
         } else {
 
             _routes.some((item, index) => {
-                if (item === idx) {
+                if (item === rout_idx) {
 
                     this._navigator.popN(_routes.length -1 - index);
                     _routes = this.state.routes.slice(0, index + 1);
@@ -101,13 +106,31 @@ class App extends Component {
                 }
             });
 
-            if (!hasRoute) {
 
-                this._navigator.push(routes[idx]);
+            if (this._navigator && this._navigator.getCurrentRoutes().length > 1) {
+
+                var rout_list = this._navigator.getCurrentRoutes(),
+                    isset = false;
+
+                for (var i = 0; i < rout_list.length; i++) {
+
+                    if(rout_list[i].index == rout_idx) {
+
+                        isset = true;
+                        break;
+                    }
+                } 
+            }
+
+            if(!isset) {
+
+                this._navigator.push(routes[rout_idx]);
             }
 
             this.setState({
-                routes: hasRoute === true ? _routes : [ ...this.state.routes, idx]
+                routes: hasRoute === true ? _routes : [ ...this.state.routes, rout_idx],
+                action: action,
+                passProps: passProps
             });
         }
     }
@@ -134,13 +157,6 @@ class App extends Component {
 
     componentWillMount(){
 
-        // AsyncStorage.setItem('data_test_1', 'value test 2');
-
-        // AsyncStorage.getItem('data_test_1').then((value) => {
-            
-        //     alert(value);
-        // });
-
         BackAndroid.addEventListener('hardwareBackPress', this.handlesBackButton);
     }
 
@@ -158,61 +174,53 @@ class App extends Component {
                 drawerPosition={DrawerLayoutAndroid.positions.left}
                 onDrawerOpen={this.setDrawerState}
                 onDrawerClose={this.setDrawerState}
-                renderNavigationView={() => <DrawerMenu navigate={this.navigateTo} />}
-            >
+                renderNavigationView={() => <DrawerMenu navigate={this.navigateTo} />} >
+
                 <Icon.ToolbarAndroid
                     titleColor='#fff'
-                    // title='Lighthouses'
-                    //--> Remove the View child of the Toolbar if you
-                    // don't need a Icon.
                     navIconName='md-menu'
                     onIconClicked={this.toggleDrawer}
                     actions={toolbarActions}
                     onActionSelected={this._onActionSelected}
                     style={styles.appBar}
-                    overflowIconName="md-more"
-                >
+                    overflowIconName="md-more" >
+                    
                     <View style={styles.appBarLogo}>
                         <TouchableOpacity
-                            onPress={this.navigateTo.bind(this, 0)}
-                        >
+                            onPress={this.navigateTo.bind(this, 0)} >
+
                             <Icon name="md-wine" size={30} color="#fff" />
                         </TouchableOpacity>
                         <Text
                             style={styles.appBarTitle}
-                            numberOfLines={1}
-                        >
+                            numberOfLines={1} >
+
                             {routes[this.state.routes[this.state.routes.length - 1]].title}
                         </Text>
                     </View>
                 </Icon.ToolbarAndroid>
+
                 <Navigator
                     initialRoute={routes[0]}
                     renderScene={(route, navigator) => {
-                        const idx = route.index - 1;
+
                         switch (route.index) {
                             case 0:
-                                return <Home />;
-                            case 1:
-                                return <Lindau index={idx} />;
-                            case 2:
-                                return <Fanad index={idx} />;
-                            case 3:
-                                return <Augustine index={idx} />;
-                            case 4:
-                                return <Peggys index={idx} />;
-                            case 5:
-                                return <Hercules index={idx} />;
-                            case 6:
-                                return <Bass index={idx} />;
+                                return <Home navigate={this.navigateTo} />;
                             case 7:
                                 return <About />;
                             case 8:
                                 return <Credits />;
                             case 9:
-                                return <CustomList />;
+                                return <CustomList navigate={this.navigateTo} />;
+                            case 10:
+                                return <ArticleView navigate={this.navigateTo} data={this.state.passProps} />;
+                            case 11:
+                                return <SearchModal navigate={this.navigateTo} data={this.state.passProps} />;
+                            case 12:
+                                return <ItemDetailsView navigate={this.navigateTo} data={this.state.passProps} />;
                             default:
-                                return <Home />;
+                                return <About />;
                         }
                     }}
                     configureScene={(route, routeStack) =>
@@ -220,6 +228,7 @@ class App extends Component {
                     }
                     ref={(nav) => {this._navigator = nav;}}
                 />
+
             </DrawerLayoutAndroid>
         );
     }
