@@ -12,13 +12,15 @@ export const routes = [
   {title: 'ArticleView', index: 10},
   {title: 'SearchModal', index: 11},
   {title: 'Item Details', index: 12},
+  {title: 'Animations', index: 13}
 ];
 
 export const toolbarActions = [
   { title: 'About', show: 'never' },
   { title: 'Credits', show: 'never' },
   { title: 'List', show: 'never' },
-  { title: 'Search', iconName: 'md-search', show: 'always' }
+  { title: 'Search', iconName: 'md-search', show: 'always' },
+  { title: 'Animations', show: 'never' }
 ]
 
 // export const menuItems = [ 

@@ -20,6 +20,7 @@ import DrawerMenu from './DrawerMenu';
 
 import ArticleView from '../views/ArticleView';
 import ItemDetailsView from '../views/ItemDetailsView';
+import AnimationsView from '../views/AnimationsView';
 import SearchModal from '../views/modals/SearchModal';
 
 import Home from '../views/Home';
@@ -59,6 +60,9 @@ class App extends Component {
                 break;
             case 3:
                 this.navigateTo(11, {}, 'search_modal');
+                break;
+            case 4:
+                this.navigateTo(13, {}, '');
                 break;
         }
     }
@@ -219,6 +223,8 @@ class App extends Component {
                                 return <SearchModal navigate={this.navigateTo} data={this.state.passProps} />;
                             case 12:
                                 return <ItemDetailsView navigate={this.navigateTo} data={this.state.passProps} />;
+                            case 13:
+                                return <AnimationsView navigate={this.navigateTo} data={this.state.passProps} />;
                             default:
                                 return <About />;
                         }
